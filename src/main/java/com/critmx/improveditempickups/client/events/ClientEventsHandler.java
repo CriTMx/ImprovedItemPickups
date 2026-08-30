@@ -2,12 +2,10 @@ package com.critmx.improveditempickups.client.events;
 
 import com.critmx.improveditempickups.ImprovedItemPickups;
 import com.critmx.improveditempickups.client.ClientSession;
-import com.critmx.improveditempickups.client.PickupAggregationPresenter;
 import com.critmx.improveditempickups.common.logic.PickupTrackerManager;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(modid = ImprovedItemPickups.MODID)
@@ -35,5 +33,9 @@ public class ClientEventsHandler {
             return;
         }
         PickupTrackerManager.tick(level.getGameTime());
+
+        if (clientSession != null) {
+            clientSession.tick();
+        }
     }
 }

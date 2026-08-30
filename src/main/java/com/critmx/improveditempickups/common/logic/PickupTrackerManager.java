@@ -1,6 +1,6 @@
 package com.critmx.improveditempickups.common.logic;
 
-import com.critmx.improveditempickups.common.logic.data.PickupAggregation;
+import com.critmx.improveditempickups.common.logic.pickup.PickupAggregation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
