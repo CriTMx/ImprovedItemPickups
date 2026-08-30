@@ -1,6 +1,8 @@
 package com.critmx.improveditempickups;
 
+import com.critmx.improveditempickups.common.logic.PickupTrackerManager;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -19,8 +21,12 @@ public class ImprovedItemPickups {
 
     public ImprovedItemPickups(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::clientSetup);
 
         NeoForge.EVENT_BUS.register(this);
+    }
+
+    private void clientSetup(FMLClientSetupEvent event) {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
