@@ -4,7 +4,7 @@ import com.critmx.improveditempickups.ImprovedItemPickups;
 
 import java.util.List;
 
-public class PickupNotificationUpdateListener implements IPickupNotificationUpdateListener {
+public class DebugPickupNotificationUpdateListener implements IPickupNotificationUpdateListener {
     @Override
     public void onNotificationsUpdated(List<IPickupNotification> notifications) {
         ImprovedItemPickups.LOGGER.info("Notifications updated:");
