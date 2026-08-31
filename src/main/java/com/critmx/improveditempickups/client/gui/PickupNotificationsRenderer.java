@@ -1,7 +1,8 @@
 package com.critmx.improveditempickups.client.gui;
 
-import com.critmx.improveditempickups.client.presentation.notification.IPickupNotification;
-import com.critmx.improveditempickups.client.presentation.notification.IPickupNotificationUpdateListener;
+import com.critmx.improveditempickups.client.presentation.animation.AnimationController;
+import com.critmx.improveditempickups.client.presentation.animation.AnimationState;
+import com.critmx.improveditempickups.client.presentation.notification.*;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.phys.Vec2;
@@ -16,7 +17,7 @@ public class PickupNotificationsRenderer implements GuiLayer, IPickupNotificatio
 
     public static final PickupNotificationsRenderer INSTANCE = new PickupNotificationsRenderer();
 
-    private IPickupNotificationDisplayDefinition displayDefinition = new SimpleNotificationDisplayDefinition();
+    private IPickupNotificationDisplayComposition displayComposition = new SimpleNotificationDisplayComposition();
 
     private GuiGraphicsExtractor guiGraphics;
 
@@ -30,27 +31,53 @@ public class PickupNotificationsRenderer implements GuiLayer, IPickupNotificatio
             return;
         }
 
-        var itr = activeNotifElements.iterator();
-        while (itr.hasNext()) {
-            var element = itr.next();
+        int centerX = guiGraphics.guiWidth() / 2;
+        int centerY = guiGraphics.guiHeight() / 2;
+
+        int marginX = 24;
+        int marginY = -16;
+
+        int spacingX = 0;
+        int spacingY = 28;
+
+        float xBase = centerX + 91;
+        float yBase = guiGraphics.guiHeight();
+
+        for (IPickupNotificationDisplayElement element : activeNotifElements) {
+            int index = activeNotifElements.indexOf(element);
+            Vec2 pos = new Vec2(xBase + marginX, yBase + marginY - spacingY * index);
+            element.setPosition(pos);
             element.render(guiGraphics, deltaTracker);
         }
+
+        activeNotifElements.removeIf(element -> element.getAnimationController().getState() == AnimationState.NONE);
     }
 
     @Override
     public void onNotificationsUpdated(List<IPickupNotification> notifications) {
+        for (var notification : notifications) {
+            var existingElement = activeNotifElements.stream()
+                    .filter(element -> element.getNotification().matches(notification.getItemStack()))
+                    .findFirst();
 
-        float xBase = guiGraphics.guiWidth() - 500;
-        float yBase = guiGraphics.guiHeight() - 16;
-
-        activeNotifElements.clear();
-        for (var notif : notifications) {
-            activeNotifElements.add(new PickupNotificationDisplayElement(notif, displayDefinition, new Vec2(xBase, yBase - 18 * activeNotifElements.size())));
+            if (existingElement.isPresent()) {
+                existingElement.get().updateNotification(notification);
+            } else {
+                activeNotifElements.add(new PickupNotificationDisplayElement(notification, displayComposition, new AnimationController()));
+            }
         }
-        // we need the comparison for showing new/expiring old here (for animations).
+
+        for (var element : activeNotifElements) {
+            boolean stillActive = notifications.stream()
+                    .anyMatch(notification -> element.getNotification().matches(notification.getItemStack()));
+
+            if (!stillActive) {
+                element.expire();
+            }
+        }
     }
 
-    public void setDisplayDefinition(IPickupNotificationDisplayDefinition displayDefinition) {
-        this.displayDefinition = displayDefinition;
+    public void setDisplayComposition(IPickupNotificationDisplayComposition displayComposition) {
+        this.displayComposition = displayComposition;
     }
 }
