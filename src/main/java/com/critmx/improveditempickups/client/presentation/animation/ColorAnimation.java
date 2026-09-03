@@ -1,6 +1,8 @@
 package com.critmx.improveditempickups.client.presentation.animation;
 
 public class ColorAnimation implements IAnimation {
+    private final boolean inEnabled;
+    private final boolean outEnabled;
     private final int inStartColor;
     private final int inEndColor;
     private final int outStartColor;
@@ -8,7 +10,9 @@ public class ColorAnimation implements IAnimation {
     private final Ease inEasing;
     private final Ease outEasing;
 
-    public ColorAnimation(int inStartColor, int inEndColor, int outStartColor, int outEndColor, Ease inEasing, Ease outEasing) {
+    public ColorAnimation(boolean inEnabled, int inStartColor, int inEndColor, Ease inEasing, boolean outEnabled, int outStartColor, int outEndColor, Ease outEasing) {
+        this.inEnabled = inEnabled;
+        this.outEnabled = outEnabled;
         this.inStartColor = inStartColor;
         this.inEndColor = inEndColor;
         this.outStartColor = outStartColor;
@@ -21,16 +25,14 @@ public class ColorAnimation implements IAnimation {
     public AnimationResult apply(AnimationState state, float progress, AnimationResult currentAnim) {
         return switch (state) {
             case IN -> {
+                if (!inEnabled) yield currentAnim;
                 float easedProgress = inEasing.apply(progress);
-                int alpha = (int) (inStartColor + 255 * easedProgress);
-
                 yield new AnimationResult(currentAnim.position(), currentAnim.rotation(), currentAnim.scale(), interpolateColor(inStartColor, inEndColor, easedProgress));
             }
 
             case OUT -> {
+                if (!outEnabled) yield currentAnim;
                 float easedProgress = outEasing.apply(progress);
-                int alpha = (int) (255 * (1f - easedProgress));
-
                 yield new AnimationResult(currentAnim.position(), currentAnim.rotation(), currentAnim.scale(), interpolateColor(outStartColor, outEndColor, easedProgress));
             }
 

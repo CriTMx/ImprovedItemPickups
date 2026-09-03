@@ -58,6 +58,11 @@ public class PickupNotification implements IPickupNotification {
     }
 
     @Override
+    public int getLifetimeTicks() {
+        return lifetimeTicks;
+    }
+
+    @Override
     public void updateItemStack(ItemStack newStack) {
         this.itemStack = newStack;
     }

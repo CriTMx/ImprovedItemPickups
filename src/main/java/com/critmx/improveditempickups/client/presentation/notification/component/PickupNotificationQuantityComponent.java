@@ -1,5 +1,6 @@
 package com.critmx.improveditempickups.client.presentation.notification.component;
 
+import com.critmx.improveditempickups.common.config.ImprovedItemPickupsConfig;
 import com.critmx.improveditempickups.client.presentation.notification.IPickupNotification;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -9,14 +10,14 @@ import net.minecraft.world.phys.Vec2;
 public class PickupNotificationQuantityComponent implements IPickupNotificationComponent {
     @Override
     public void render(IPickupNotification notification, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, Vec2 position, int width, int height, int color) {
-        int quantity = notification.getItemStack().count();
         var font = Minecraft.getInstance().font;
         int x = (int)position.x;
         int y = (int)position.y;
 
         var quantityString = buildQuantityString(notification);
 
-        guiGraphics.text(font, quantityString, x, y, color);
+        int configuredColor = ImprovedItemPickupsConfig.CLIENT_CONFIG.quantityColor.get();
+        guiGraphics.text(font, quantityString, x, y, multiplyRgbColor(configuredColor, color));
     }
 
     @Override
@@ -26,10 +27,17 @@ public class PickupNotificationQuantityComponent implements IPickupNotificationC
     }
 
     private String buildQuantityString(IPickupNotification notification) {
-        String prefix = "x";
-        String suffix = "";
+        var config = ImprovedItemPickupsConfig.CLIENT_CONFIG;
         int quantity = notification.getItemStack().count();
 
-        return String.format("%s%d%s ", prefix, quantity, suffix);
+        return config.quantityPrefix.get() + quantity + config.quantitySuffix.get();
+    }
+
+    private int multiplyRgbColor(int rgbColor, int animationColor) {
+        int alpha = ((animationColor >>> 24) & 0xFF);
+        int red = ((rgbColor >>> 16) & 0xFF) * ((animationColor >>> 16) & 0xFF) / 255;
+        int green = ((rgbColor >>> 8) & 0xFF) * ((animationColor >>> 8) & 0xFF) / 255;
+        int blue = (rgbColor & 0xFF) * (animationColor & 0xFF) / 255;
+        return (alpha << 24) | (red << 16) | (green << 8) | blue;
     }
 }

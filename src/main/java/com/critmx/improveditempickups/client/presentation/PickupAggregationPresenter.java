@@ -17,10 +17,15 @@ public class PickupAggregationPresenter implements IPickupAggregationListener, I
     private final List<IPickupNotification> activeNotifications = new ArrayList<>();
     private final List<IPickupNotificationUpdateListener> notificationUpdateListeners = new ArrayList<>();
 
-    private final int notificationLifetimeTicks = 60;
-    private final int maxNotifications = 5;
+    private final int notificationLifetimeTicks;
+    private final int maxNotifications;
 
     private IPickupNotificationPolicy policy = new MergeNotificationsPolicy();
+
+    public PickupAggregationPresenter(int notificationLifetimeTicks, int maxNotifications) {
+        this.notificationLifetimeTicks = notificationLifetimeTicks;
+        this.maxNotifications = maxNotifications;
+    }
 
     @Override
     public void onPickupAggregation(PickupAggregation pickupAggregation) {
