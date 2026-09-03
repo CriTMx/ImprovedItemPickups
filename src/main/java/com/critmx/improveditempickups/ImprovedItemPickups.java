@@ -29,16 +29,9 @@ public class ImprovedItemPickups {
                 ImprovedItemPickupsConfig.CLIENT_SPEC
         );
 
-        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> new ConfigurationScreen(modContainer, parent));
-
         modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::clientSetup);
 
         NeoForge.EVENT_BUS.register(this);
-    }
-
-    private void clientSetup(FMLClientSetupEvent event) {
-
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

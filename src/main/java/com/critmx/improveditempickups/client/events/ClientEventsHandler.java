@@ -5,15 +5,25 @@ import com.critmx.improveditempickups.client.ClientSession;
 import com.critmx.improveditempickups.client.gui.PickupNotificationsRenderer;
 import com.critmx.improveditempickups.common.logic.PickupTrackerManager;
 import net.minecraft.resources.Identifier;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-@EventBusSubscriber(modid = ImprovedItemPickups.MODID)
+@EventBusSubscriber(modid = ImprovedItemPickups.MODID, value = Dist.CLIENT)
 public class ClientEventsHandler {
     private static ClientSession clientSession;
+
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        var modContainer = event.getContainer();
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (mc, parent) -> new ConfigurationScreen(modContainer, parent));
+    }
 
     @SubscribeEvent
     public static void onClientJoin(ClientPlayerNetworkEvent.LoggingIn event) {
