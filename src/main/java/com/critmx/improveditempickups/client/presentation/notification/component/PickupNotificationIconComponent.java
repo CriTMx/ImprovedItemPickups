@@ -9,13 +9,8 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 
-public class PickupNotificationIconComponent implements IPickupNotificationComponent , IAnimatable {
-    private final AnimationController animationController;
+public class PickupNotificationIconComponent implements IPickupNotificationComponent {
     private Vec2 position;
-
-    public PickupNotificationIconComponent(AnimationController animationController) {
-        this.animationController = animationController;
-    }
 
     @Override
     public void render(IPickupNotification notification, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, Vec2 position, int width, int height, int color) {
@@ -31,20 +26,5 @@ public class PickupNotificationIconComponent implements IPickupNotificationCompo
     @Override
     public Vec2 getRequiredSize(IPickupNotification notification) {
         return null;
-    }
-
-    @Override
-    public AnimationController getAnimationController() {
-        return null;
-    }
-
-    @Override
-    public AnimationResult getBaseState() {
-        return new AnimationResult(
-                position,
-                0f,
-                new Vec2(1f, 1f),
-                0xFFFFFFFF
-        );
     }
 }
