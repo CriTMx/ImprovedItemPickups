@@ -3,6 +3,9 @@
   "package": "com.critmx.improveditempickups.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [],
+  "client": [
+    "ClientPacketListenerMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

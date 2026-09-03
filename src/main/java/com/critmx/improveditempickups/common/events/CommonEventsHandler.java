@@ -14,10 +14,10 @@ public class CommonEventsHandler {
 
     @SubscribeEvent
     public static void onItemEntityPickup(ItemEntityPickupEvent.Post event) {
-        try {
-            PickupTrackerManager.onPickup(event.getOriginalStack(), event.getPlayer().level().getGameTime());
-        } catch (Exception ex) {
-            ImprovedItemPickups.LOGGER.error("[{}] Exception caught for onItemEntityPickup: {}", ImprovedItemPickups.MODID, ex.getMessage());
-        }
+//        try {
+//            PickupTrackerManager.onPickup(event.getOriginalStack(), event.getPlayer().level().getGameTime());
+//        } catch (Exception ex) {
+//            ImprovedItemPickups.LOGGER.error("[{}] Exception caught for onItemEntityPickup: {}", ImprovedItemPickups.MODID, ex.getMessage());
+//        }
     }
 }
