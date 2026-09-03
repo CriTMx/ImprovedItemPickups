@@ -2,9 +2,9 @@ package com.critmx.improveditempickups.client.gui;
 
 import com.critmx.improveditempickups.client.presentation.animation.*;
 import com.critmx.improveditempickups.client.presentation.notification.*;
+import com.critmx.improveditempickups.common.config.ImprovedItemPickupsConfig;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.util.Ease;
 import net.minecraft.world.phys.Vec2;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 
@@ -31,21 +31,23 @@ public class PickupNotificationsRenderer implements GuiLayer, IPickupNotificatio
             return;
         }
 
+        var config = ImprovedItemPickupsConfig.CLIENT_CONFIG;
         int centerX = guiGraphics.guiWidth() / 2;
         int centerY = guiGraphics.guiHeight() / 2;
-
-        int marginX = 24;
-        int marginY = -16;
-
-        int spacingX = 0;
-        int spacingY = 28;
-
-        float xBase = centerX + 91;
-        float yBase = guiGraphics.guiHeight();
+        float xBase;
+        float yBase;
+        switch (config.positionPreset.get()) {
+            case HOTBAR_LEFT -> { xBase = centerX - 70; yBase = guiGraphics.guiHeight() - 16; }
+            case RIGHT_SIDEBAR -> { xBase = guiGraphics.guiWidth(); yBase = centerY; }
+            case LEFT_SIDEBAR -> { xBase = 16; yBase = centerY; }
+            default -> { xBase = centerX + 115; yBase = guiGraphics.guiHeight() - 16; }
+        }
+        xBase += config.positionOffsetX.get();
+        yBase += config.positionOffsetY.get();
 
         for (IPickupNotificationDisplayElement element : activeNotifElements) {
             int index = activeNotifElements.indexOf(element);
-            Vec2 pos = new Vec2(xBase + marginX, yBase + marginY - spacingY * index);
+            Vec2 pos = new Vec2(xBase, yBase - config.notificationSpacing.get() * index);
             element.setPosition(pos);
             element.render(guiGraphics, deltaTracker);
         }
@@ -63,13 +65,7 @@ public class PickupNotificationsRenderer implements GuiLayer, IPickupNotificatio
             if (existingElement.isPresent()) {
                 existingElement.get().updateNotification(notification);
             } else {
-                activeNotifElements.add(new PickupNotificationDisplayElement(notification, displayComposition, new AnimationController(
-                        new AnimationDefinition(4, 4, List.of(
-                                new PositionAnimation(50f, 0f, Eases.EASE_OUT, Eases.EASE_IN),
-                                new ColorAnimation(0x00FFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00FFFFFF, Eases.EASE_IN, Eases.EASE_OUT)
-                        )),
-                        notification.getLifetimeTicks()
-                )));
+                activeNotifElements.add(new PickupNotificationDisplayElement(notification, displayComposition, createAnimationController(notification.getLifetimeTicks())));
             }
         }
 
@@ -85,5 +81,27 @@ public class PickupNotificationsRenderer implements GuiLayer, IPickupNotificatio
 
     public void setDisplayComposition(IPickupNotificationDisplayComposition displayComposition) {
         this.displayComposition = displayComposition;
+    }
+
+    private AnimationController createAnimationController(float lifetimeTicks) {
+        var config = ImprovedItemPickupsConfig.CLIENT_CONFIG.animation;
+        var in = config.in;
+        var out = config.out;
+        var animations = new ArrayList<IAnimation>();
+        if (in.positionEnabled.get() || out.positionEnabled.get()) animations.add(new PositionAnimation(in.positionEnabled.get(), in.positionOffsetX.get().floatValue(), in.positionOffsetY.get().floatValue(), Eases.fromConfig(in.positionEase.get()), out.positionEnabled.get(), out.positionOffsetX.get().floatValue(), out.positionOffsetY.get().floatValue(), Eases.fromConfig(out.positionEase.get())));
+        if (in.rotationEnabled.get() || out.rotationEnabled.get()) animations.add(new RotationAnimation(in.rotationEnabled.get(), (float) Math.toRadians(in.rotationDegrees.get()), Eases.fromConfig(in.rotationEase.get()), out.rotationEnabled.get(), (float) Math.toRadians(out.rotationDegrees.get()), Eases.fromConfig(out.rotationEase.get())));
+        if (in.scaleEnabled.get() || out.scaleEnabled.get()) animations.add(new ScaleAnimation(in.scaleEnabled.get(), new Vec2(in.scaleX.get().floatValue(), in.scaleY.get().floatValue()), Eases.fromConfig(in.scaleEase.get()), out.scaleEnabled.get(), new Vec2(out.scaleX.get().floatValue(), out.scaleY.get().floatValue()), Eases.fromConfig(out.scaleEase.get())));
+        if (in.colorEnabled.get() || out.colorEnabled.get()) animations.add(new ColorAnimation(in.colorEnabled.get(), parseColor(in.colorStart.get(), 0x00FFFFFF), parseColor(in.colorEnd.get(), 0xFFFFFFFF), Eases.fromConfig(in.colorEase.get()), out.colorEnabled.get(), parseColor(out.colorStart.get(), 0xFFFFFFFF), parseColor(out.colorEnd.get(), 0x00FFFFFF), Eases.fromConfig(out.colorEase.get())));
+        return new AnimationController(new AnimationDefinition(config.inDurationTicks.get(), config.outDurationTicks.get(), animations), lifetimeTicks);
+    }
+
+    private int parseColor(String value, int fallback) {
+        try {
+            String normalized = value.trim().replace("0x", "").replace("#", "");
+            if (normalized.length() == 6) normalized = "FF" + normalized;
+            return (int) Long.parseLong(normalized, 16);
+        } catch (RuntimeException ignored) {
+            return fallback;
+        }
     }
 }

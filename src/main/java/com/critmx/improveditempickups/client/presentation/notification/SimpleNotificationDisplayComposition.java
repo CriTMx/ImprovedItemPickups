@@ -3,6 +3,7 @@ package com.critmx.improveditempickups.client.presentation.notification;
 import com.critmx.improveditempickups.ImprovedItemPickups;
 import com.critmx.improveditempickups.client.presentation.notification.component.*;
 import com.critmx.improveditempickups.common.config.ImprovedItemPickupsConfig;
+import com.critmx.improveditempickups.common.config.PositionPreset;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
@@ -20,6 +21,13 @@ public class SimpleNotificationDisplayComposition implements IPickupNotification
 
     @Override
     public void render(IPickupNotification notification, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, Vec2 position, float rotation, Vec2 scale, int color) {
+        var pose = guiGraphics.pose();
+        pose.pushMatrix();
+        pose.translate(position.x, position.y);
+        pose.rotate(rotation);
+        pose.scale(scale.x, scale.y);
+        pose.translate(-position.x, -position.y);
+        try {
         var config = ImprovedItemPickupsConfig.CLIENT_CONFIG;
 
         int x = (int)position.x;
@@ -44,6 +52,10 @@ public class SimpleNotificationDisplayComposition implements IPickupNotification
 
         int width = Math.max(config.backgroundMinWidth.get(), iconSpace + textWidth + paddingLeft + paddingRight);
         int height = config.backgroundHeight.get();
+
+        if (config.positionPreset.get() == PositionPreset.HOTBAR_LEFT || config.positionPreset.get() == PositionPreset.RIGHT_SIDEBAR) {
+            x -= width;
+        }
 
         int imageX = x - paddingLeft - paddingRight;
         int imageY = y - paddingTop - paddingBottom - height / 4;
@@ -72,6 +84,9 @@ public class SimpleNotificationDisplayComposition implements IPickupNotification
         }
         if (nameEnabled) {
             nameComponent.render(notification, guiGraphics, deltaTracker, namePos, width, height, color);
+        }
+        } finally {
+            pose.popMatrix();
         }
     }
 
