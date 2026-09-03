@@ -4,6 +4,7 @@ import com.critmx.improveditempickups.client.presentation.animation.*;
 import com.critmx.improveditempickups.client.presentation.notification.*;
 import com.critmx.improveditempickups.common.config.ImprovedItemPickupsConfig;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.phys.Vec2;
 import net.neoforged.neoforge.client.gui.GuiLayer;
@@ -27,7 +28,7 @@ public class PickupNotificationsRenderer implements GuiLayer, IPickupNotificatio
             this.guiGraphics = guiGraphics;
         }
 
-        if (activeNotifElements.isEmpty()) {
+        if (activeNotifElements.isEmpty() || Minecraft.getInstance().options.hideGui) {
             return;
         }
 
