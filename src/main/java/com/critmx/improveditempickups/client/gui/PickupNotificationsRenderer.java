@@ -68,7 +68,7 @@ public class PickupNotificationsRenderer implements GuiLayer, IPickupNotificatio
                                 new PositionAnimation(50f, 0f, Eases.EASE_OUT, Eases.EASE_IN),
                                 new ColorAnimation(0x00FFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00FFFFFF, Eases.EASE_IN, Eases.EASE_OUT)
                         )),
-                        60
+                        notification.getLifetimeTicks()
                 )));
             }
         }
