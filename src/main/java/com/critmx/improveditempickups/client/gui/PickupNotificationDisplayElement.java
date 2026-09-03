@@ -1,8 +1,6 @@
 package com.critmx.improveditempickups.client.gui;
 
-import com.critmx.improveditempickups.client.presentation.animation.AnimationController;
-import com.critmx.improveditempickups.client.presentation.animation.AnimationState;
-import com.critmx.improveditempickups.client.presentation.animation.Eases;
+import com.critmx.improveditempickups.client.presentation.animation.*;
 import com.critmx.improveditempickups.client.presentation.notification.IPickupNotification;
 import com.critmx.improveditempickups.client.presentation.notification.IPickupNotificationDisplayComposition;
 import net.minecraft.client.DeltaTracker;
@@ -37,12 +35,8 @@ public class PickupNotificationDisplayElement implements IPickupNotificationDisp
             return;
         }
 
-        Vec2 animatedPosition = getAnimatedPosition();
-        float animatedRotation = getAnimatedRotation();
-        Vec2 animatedScale = getAnimatedScale();
-        int animatedColor = getAnimatedColor();
-
-        displayComposition.render(notification, guiGraphics, deltaTracker, animatedPosition, animatedRotation, animatedScale, animatedColor);
+        AnimationResult animResult = getAnimatedState();
+        displayComposition.render(notification, guiGraphics, deltaTracker, animResult.position(), animResult.rotation(), animResult.scale(), animResult.color());
     }
 
     @Override
@@ -66,53 +60,26 @@ public class PickupNotificationDisplayElement implements IPickupNotificationDisp
         return animationController;
     }
 
-    private Vec2 getAnimatedPosition() {
-        float progress = animationController.getProgress();
-        return switch (animationController.getState()) {
-            case NONE, CYCLE -> position;
-            case IN -> {
-                float x = position.x + SLIDE_OFFSET * (1f - Eases.EASE_OUT.apply(progress));
-                yield new Vec2(x, position.y);
-            }
-            case OUT -> {
-                Vec2 startPosition = exitPosition != null
-                        ? exitPosition
-                        : position;
-
-                float x = startPosition.x + SLIDE_OFFSET * Eases.EASE_IN.apply(progress);
-                yield new Vec2(x, startPosition.y);
-            }
-        };
-    }
-
-    private float getAnimatedRotation() {
-        return 0f;
-    }
-
-    private Vec2 getAnimatedScale() {
-        return new Vec2(1f, 1f);
-    }
-
-    private int getAnimatedColor() {
-        float progress = animationController.getProgress();
-
-        return switch (animationController.getState()) {
-            case IN -> {
-                int alpha = (int) (255 * Eases.EASE_IN.apply(progress));
-                yield (alpha << 24) | 0xFFFFFF;
-            }
-
-            case CYCLE, NONE -> 0xFFFFFFFF;
-
-            case OUT -> {
-                int alpha = (int) (255 * (1.0f - Eases.EASE_OUT.apply(progress)));
-                yield (alpha << 24) | 0xFFFFFF;
-            }
-        };
-    }
-
     public void expire() {
         exitPosition = position;
         animationController.startOut();
+    }
+
+    @Override
+    public AnimationResult getBaseState() {
+        return new AnimationResult(position, 0f, new Vec2(1f, 1f), 0xFFFFFFFF);
+    }
+
+    @Override
+    public AnimationResult getAnimatedState() {
+        AnimationResult result = getBaseState();
+        AnimationState state = animationController.getState();
+        float progress = animationController.getProgress();
+
+        for (IAnimation animation : animationController.getDefinition().animations()) {
+            result = animation.apply(state, progress, result);
+        }
+
+        return result;
     }
 }

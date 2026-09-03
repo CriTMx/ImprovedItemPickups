@@ -1,5 +1,6 @@
 package com.critmx.improveditempickups.client.presentation.notification.component;
 
+import com.critmx.improveditempickups.client.presentation.animation.AnimationResult;
 import com.critmx.improveditempickups.client.presentation.notification.IPickupNotification;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

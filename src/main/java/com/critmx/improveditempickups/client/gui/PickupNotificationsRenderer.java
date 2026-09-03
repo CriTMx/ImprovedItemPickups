@@ -1,10 +1,10 @@
 package com.critmx.improveditempickups.client.gui;
 
-import com.critmx.improveditempickups.client.presentation.animation.AnimationController;
-import com.critmx.improveditempickups.client.presentation.animation.AnimationState;
+import com.critmx.improveditempickups.client.presentation.animation.*;
 import com.critmx.improveditempickups.client.presentation.notification.*;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.util.Ease;
 import net.minecraft.world.phys.Vec2;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 
@@ -63,7 +63,13 @@ public class PickupNotificationsRenderer implements GuiLayer, IPickupNotificatio
             if (existingElement.isPresent()) {
                 existingElement.get().updateNotification(notification);
             } else {
-                activeNotifElements.add(new PickupNotificationDisplayElement(notification, displayComposition, new AnimationController()));
+                activeNotifElements.add(new PickupNotificationDisplayElement(notification, displayComposition, new AnimationController(
+                        new AnimationDefinition(4, 4, List.of(
+                                new PositionAnimation(50f, 0f, Eases.EASE_OUT, Eases.EASE_IN),
+                                new ColorAnimation(0x00FFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00FFFFFF, Eases.EASE_IN, Eases.EASE_OUT)
+                        )),
+                        60
+                )));
             }
         }
 

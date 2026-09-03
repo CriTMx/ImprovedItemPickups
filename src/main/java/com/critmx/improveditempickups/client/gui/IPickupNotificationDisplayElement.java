@@ -1,6 +1,7 @@
 package com.critmx.improveditempickups.client.gui;
 
 import com.critmx.improveditempickups.client.presentation.animation.AnimationController;
+import com.critmx.improveditempickups.client.presentation.animation.AnimationResult;
 import com.critmx.improveditempickups.client.presentation.notification.IPickupNotification;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -13,4 +14,6 @@ public interface IPickupNotificationDisplayElement {
     AnimationController getAnimationController();
     void updateNotification(IPickupNotification notification);
     void expire();
+    AnimationResult getBaseState();
+    AnimationResult getAnimatedState();
 }

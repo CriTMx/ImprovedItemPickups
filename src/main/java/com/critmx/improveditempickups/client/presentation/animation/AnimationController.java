@@ -1,15 +1,15 @@
 package com.critmx.improveditempickups.client.presentation.animation;
 
 public class AnimationController {
-    private static final int IN_TICKS = 4;
-    private static final int CYCLE_TICKS = 52;
-    private static final int OUT_TICKS = 4;
 
+    private final AnimationDefinition definition;
+    private final int cycleTicks;
     private AnimationState state = AnimationState.IN;
     private float stateElapsedTicks = 0;
 
-    public AnimationController() {
-
+    public AnimationController(AnimationDefinition definition, float lifetimeTicks) {
+        this.definition = definition;
+        this.cycleTicks = (int)Math.max(0, lifetimeTicks - definition.inTicks() - definition.outTicks());
     }
 
     public void tick(float delta) {
@@ -23,23 +23,20 @@ public class AnimationController {
     }
 
     private void tickIn() {
-        float progress = Math.min((float) stateElapsedTicks / IN_TICKS, 1f);
-        if (stateElapsedTicks >= IN_TICKS) {
+        if (stateElapsedTicks >= definition.inTicks() || definition.inTicks() == 0) {
             state = AnimationState.CYCLE;
             stateElapsedTicks = 0;
         }
     }
 
     private void tickCycle() {
-        if (stateElapsedTicks >= CYCLE_TICKS) {
+        if (stateElapsedTicks >= cycleTicks) {
             startOut();
         }
     }
 
     private void tickOut() {
-        float progress = Math.min((float) stateElapsedTicks / OUT_TICKS, 1f);
-
-        if (stateElapsedTicks >= OUT_TICKS) {
+        if (stateElapsedTicks >= definition.outTicks() || definition.outTicks() == 0) {
             state = AnimationState.NONE;
         }
     }
@@ -54,14 +51,22 @@ public class AnimationController {
     public float getProgress() {
         return switch (state) {
             case NONE -> 0f;
-            case IN -> Math.min(1.0f, (float) stateElapsedTicks / IN_TICKS);
+            case IN -> {
+                yield definition.inTicks() == 0 ? 1f : Math.min(1.0f, (float) stateElapsedTicks / definition.inTicks());
+            }
             case CYCLE -> 1.0f;
-            case OUT -> Math.min(1.0f, (float) stateElapsedTicks / OUT_TICKS);
+            case OUT -> {
+                yield definition.outTicks() == 0 ? 1f : Math.min(1.0f, (float) stateElapsedTicks / definition.outTicks());
+            }
         };
     }
 
     public AnimationState getState() {
         return state;
+    }
+
+    public AnimationDefinition getDefinition() {
+        return definition;
     }
 
     public void refresh() {
