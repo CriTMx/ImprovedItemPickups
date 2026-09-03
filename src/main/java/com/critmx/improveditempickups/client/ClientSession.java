@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 
 public class ClientSession {
     private final PickupAggregationPresenter presenter;
-    private final DebugPickupNotificationUpdateListener updateListener;
+//    private final DebugPickupNotificationUpdateListener updateListener;
 
     public ClientSession(Player player) {
         PickupTrackerManager.createTracker(player);
@@ -26,8 +26,8 @@ public class ClientSession {
             case SEPARATE -> new SeparatePickupsPolicy();
         });
 
-        updateListener = new DebugPickupNotificationUpdateListener();
-        presenter.addUpdateListener(updateListener);
+//        updateListener = new DebugPickupNotificationUpdateListener();
+//        presenter.addUpdateListener(updateListener);
         presenter.addUpdateListener(PickupNotificationsRenderer.INSTANCE);
 
         PickupTrackerManager.addListener(presenter);
@@ -43,7 +43,7 @@ public class ClientSession {
         PickupTrackerManager.removeListener(presenter);
         PickupTrackerManager.discardTracker();
 
-        presenter.removeUpdateListener(updateListener);
+//        presenter.removeUpdateListener(updateListener);
         presenter.removeUpdateListener(PickupNotificationsRenderer.INSTANCE);
     }
 }
