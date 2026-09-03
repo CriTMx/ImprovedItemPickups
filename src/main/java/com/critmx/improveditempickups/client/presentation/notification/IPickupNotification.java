@@ -14,4 +14,5 @@ public interface IPickupNotification {
 
     boolean matches(ItemStack other);
     ItemStack getItemStack();
+    int getLifetimeTicks();
 }

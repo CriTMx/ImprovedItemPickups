@@ -2,11 +2,11 @@ package com.critmx.improveditempickups.client.presentation.notification;
 
 import com.critmx.improveditempickups.ImprovedItemPickups;
 import com.critmx.improveditempickups.client.presentation.notification.component.*;
+import com.critmx.improveditempickups.common.config.ImprovedItemPickupsConfig;
+import com.critmx.improveditempickups.common.config.PositionPreset;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 
 public class SimpleNotificationDisplayComposition implements IPickupNotificationDisplayComposition {
@@ -21,46 +21,105 @@ public class SimpleNotificationDisplayComposition implements IPickupNotification
 
     @Override
     public void render(IPickupNotification notification, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, Vec2 position, float rotation, Vec2 scale, int color) {
-        var mc = Minecraft.getInstance();
-        ItemStack stack = notification.getItemStack();
+        var pose = guiGraphics.pose();
+        pose.pushMatrix();
+        pose.translate(position.x, position.y);
+        pose.rotate(rotation);
+        pose.scale(scale.x, scale.y);
+        pose.translate(-position.x, -position.y);
+        try {
+        var config = ImprovedItemPickupsConfig.CLIENT_CONFIG;
 
         int x = (int)position.x;
         int y = (int)position.y;
 
-        int textWidth = (int) (nameComponent.getRequiredSize(notification).x + quantityComponent.getRequiredSize(notification).x);
-        int quantityWidth = (int)quantityComponent.getRequiredSize(notification).x;
-        int nameWidth = (int)nameComponent.getRequiredSize(notification).x;
-        int textHeight = mc.font.lineHeight;
+        boolean backgroundEnabled = config.backgroundEnabled.get();
+        boolean frameEnabled = config.frameEnabled.get();
+        boolean iconEnabled = config.iconEnabled.get();
+        boolean quantityEnabled = config.quantityEnabled.get();
+        boolean nameEnabled = config.nameEnabled.get();
 
-        int paddingLeft = 12;
-        int paddingRight = 12;
-        int paddingTop = 6;
-        int paddingBottom = 6;
+        int quantityWidth = quantityEnabled ? (int) quantityComponent.getRequiredSize(notification).x : 0;
+        int nameWidth = nameEnabled ? (int) nameComponent.getRequiredSize(notification).x : 0;
+        int textWidth = quantityWidth + nameWidth;
 
-        int imageOffsetX = 0;
-        int imageOffsetY = 0;
+        int paddingLeft = config.contentPaddingLeft.get();
+        int paddingRight = config.contentPaddingRight.get();
+        int paddingTop = config.contentPaddingTop.get();
+        int paddingBottom = config.contentPaddingBottom.get();
 
-        int iconOffsetX = -12;
-        int iconOffsetY = -9;
+        int iconSpace = iconEnabled ? 24 : 0;
 
-        int quantityOffsetX = 8;
-        int quantityOffsetY = -4;
+        int width = Math.max(config.backgroundMinWidth.get(), iconSpace + textWidth + paddingLeft + paddingRight);
+        int height = config.backgroundHeight.get();
 
-        int nameOffsetX = quantityWidth + 8 ;
-        int nameOffsetY = -4;
+        if (config.positionPreset.get() == PositionPreset.HOTBAR_LEFT || config.positionPreset.get() == PositionPreset.RIGHT_SIDEBAR) {
+            x -= width;
+        }
 
-        int width = 24 + textWidth + paddingLeft + paddingRight;
-        int height = 42;
+        int imageX = x - paddingLeft - paddingRight;
+        int imageY = y - paddingTop - paddingBottom - height / 4;
 
-        Vec2 imagePos = new Vec2(x - paddingLeft - paddingRight + imageOffsetX, y - paddingTop - paddingBottom - height / 4 + imageOffsetY);
-        Vec2 iconPos = new Vec2(x+iconOffsetX, y+iconOffsetY);
-        Vec2 quantityPos = new Vec2(x+quantityOffsetX, y+quantityOffsetY);
-        Vec2 namePos = new Vec2(x+nameOffsetX, y+nameOffsetY);
+        Vec2 backgroundPos = new Vec2(imageX + config.backgroundOffsetX.get(), imageY + config.backgroundOffsetY.get());
+        Vec2 framePos = new Vec2(imageX + config.frameOffsetX.get(), imageY + config.frameOffsetY.get());
+        Vec2 iconPos = new Vec2(x + config.iconOffsetX.get(), y + config.iconOffsetY.get());
+        Vec2 quantityPos = new Vec2(x + config.quantityOffsetX.get(), y + config.quantityOffsetY.get());
+        Vec2 namePos = new Vec2(x + quantityWidth + config.nameOffsetX.get(), y + config.nameOffsetY.get());
 
-        backgroundComponent.render(notification, guiGraphics, deltaTracker, imagePos, width, height, color);
-        frameComponent.render(notification, guiGraphics, deltaTracker, imagePos, width, height, color);
-        iconComponent.render(notification, guiGraphics, deltaTracker, iconPos, width, height, color);
-        quantityComponent.render(notification, guiGraphics, deltaTracker, quantityPos, width, height, color);
-        nameComponent.render(notification, guiGraphics, deltaTracker, namePos, width, height, color);
+        if (backgroundEnabled) {
+            backgroundComponent.render(notification, guiGraphics, deltaTracker, backgroundPos, width, height, multiplyColor(parseColor(config.backgroundColor.get(), 0xFFFFFFFF), color));
+        }
+
+        if (frameEnabled) {
+            int frameWidth = config.frameWidth.get() < 0 ? width : config.frameWidth.get();
+            int frameHeight = config.frameHeight.get() < 0 ? height : config.frameHeight.get();
+            frameComponent.render(notification, guiGraphics, deltaTracker, framePos, frameWidth, frameHeight, multiplyColor(parseColor(config.frameColor.get(), 0xFFFFFFFF), color));
+        }
+
+        if (iconEnabled) {
+            iconComponent.render(notification, guiGraphics, deltaTracker, iconPos, width, height, color);
+        }
+        if (quantityEnabled) {
+            quantityComponent.render(notification, guiGraphics, deltaTracker, quantityPos, width, height, color);
+        }
+        if (nameEnabled) {
+            nameComponent.render(notification, guiGraphics, deltaTracker, namePos, width, height, color);
+        }
+        } finally {
+            pose.popMatrix();
+        }
+    }
+
+    private int parseColor(String value, int fallback) {
+        if (value == null) {
+            return fallback;
+        }
+
+        try {
+            String normalized = value.trim();
+            if (normalized.startsWith("0x") || normalized.startsWith("0X")) {
+                normalized = normalized.substring(2);
+            } else if (normalized.startsWith("#")) {
+                normalized = normalized.substring(1);
+            }
+
+            if (normalized.length() == 6) {
+                normalized = "FF" + normalized;
+            }
+            if (normalized.length() != 8) {
+                return fallback;
+            }
+            return (int) Long.parseLong(normalized, 16);
+        } catch (NumberFormatException ignored) {
+            return fallback;
+        }
+    }
+
+    private int multiplyColor(int baseColor, int animationColor) {
+        int alpha = ((baseColor >>> 24) & 0xFF) * ((animationColor >>> 24) & 0xFF) / 255;
+        int red = ((baseColor >>> 16) & 0xFF) * ((animationColor >>> 16) & 0xFF) / 255;
+        int green = ((baseColor >>> 8) & 0xFF) * ((animationColor >>> 8) & 0xFF) / 255;
+        int blue = (baseColor & 0xFF) * (animationColor & 0xFF) / 255;
+        return (alpha << 24) | (red << 16) | (green << 8) | blue;
     }
 }
