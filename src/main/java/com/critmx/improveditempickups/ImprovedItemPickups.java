@@ -27,6 +27,7 @@ public class ImprovedItemPickups {
     }
 
     private void clientSetup(FMLClientSetupEvent event) {
+
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

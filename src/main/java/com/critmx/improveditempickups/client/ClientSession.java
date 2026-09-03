@@ -1,22 +1,24 @@
 package com.critmx.improveditempickups.client;
 
+import com.critmx.improveditempickups.client.gui.PickupNotificationsRenderer;
 import com.critmx.improveditempickups.client.presentation.PickupAggregationPresenter;
-import com.critmx.improveditempickups.client.presentation.notification.PickupNotificationUpdateListener;
+import com.critmx.improveditempickups.client.presentation.notification.DebugPickupNotificationUpdateListener;
 import com.critmx.improveditempickups.client.presentation.notification.policy.MergeNotificationsPolicy;
 import com.critmx.improveditempickups.common.logic.PickupTrackerManager;
 import net.minecraft.world.entity.player.Player;
 
 public class ClientSession {
     private final PickupAggregationPresenter presenter;
-    private final PickupNotificationUpdateListener updateListener;
+    private final DebugPickupNotificationUpdateListener updateListener;
 
     public ClientSession(Player player) {
         PickupTrackerManager.createTracker(player);
         presenter = new PickupAggregationPresenter();
         presenter.setPolicy(new MergeNotificationsPolicy());
 
-        updateListener = new PickupNotificationUpdateListener();
+        updateListener = new DebugPickupNotificationUpdateListener();
         presenter.addUpdateListener(updateListener);
+        presenter.addUpdateListener(PickupNotificationsRenderer.INSTANCE);
 
         PickupTrackerManager.addListener(presenter);
     }
@@ -32,5 +34,6 @@ public class ClientSession {
         PickupTrackerManager.discardTracker();
 
         presenter.removeUpdateListener(updateListener);
+        presenter.removeUpdateListener(PickupNotificationsRenderer.INSTANCE);
     }
 }

@@ -34,12 +34,6 @@ public class PickupAggregationPresenter implements IPickupAggregationListener, I
         }
 
         notifyUpdateListeners();
-
-//      MutableComponent prefix = Component.literal("Item picked up: ");
-//      MutableComponent itemCount = Component.literal(String.format("x%d", stack.getCount()));
-//      MutableComponent itemName = (MutableComponent) stack.getStyledHoverName();
-//      MutableComponent finalMsg = prefix.append(itemCount).append(" ").append(itemName);
-//      pickupAggregation.player().sendSystemMessage(finalMsg);
     }
 
     private void processPickup(ItemStack stack) {
@@ -72,8 +66,10 @@ public class PickupAggregationPresenter implements IPickupAggregationListener, I
     }
 
     private void notifyUpdateListeners() {
+        var activeNotificationsSnapshot = List.copyOf(activeNotifications);
+
         for (var listener : notificationUpdateListeners) {
-            listener.onNotificationsUpdated(activeNotifications);
+            listener.onNotificationsUpdated(activeNotificationsSnapshot);
         }
     }
 
