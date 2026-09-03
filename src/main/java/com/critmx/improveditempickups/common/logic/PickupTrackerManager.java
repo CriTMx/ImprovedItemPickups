@@ -15,8 +15,6 @@ public class PickupTrackerManager {
 
     private static final List<IPickupAggregationListener> listeners = new ArrayList<>();
 
-    /// <region>Lifecycle management API</region>
-
     public static void createTracker(Player player) {
         tracker = new PickupTracker(player);
     }
@@ -45,8 +43,6 @@ public class PickupTrackerManager {
             flush();
         }
     }
-
-    /// <endregion></endregion>
 
     public static void onPickup(ItemStack stack, long pickupTick) {
         lastPickupTick = pickupTick;
