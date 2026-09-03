@@ -1,0 +1,6 @@
+{
+  "improveditempickups.configuration.notifications": "Notifications Settings",
+  "improveditempickups.config.notifications.notification_lifetime_ticks": "Notification lifetime (ticks)",
+  "improveditempickups.config.notifications.max_active_notifications": "Maximum active notifications",
+  "improveditempickups.config.notifications.repeated_pickup_policy": "On repeated items picked up"
+}

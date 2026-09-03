@@ -57,7 +57,7 @@ public class PickupNotificationsRenderer implements GuiLayer, IPickupNotificatio
     public void onNotificationsUpdated(List<IPickupNotification> notifications) {
         for (var notification : notifications) {
             var existingElement = activeNotifElements.stream()
-                    .filter(element -> element.getNotification().matches(notification.getItemStack()))
+                    .filter(element -> element.getNotification() == notification)
                     .findFirst();
 
             if (existingElement.isPresent()) {
