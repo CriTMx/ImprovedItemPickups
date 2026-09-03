@@ -17,6 +17,10 @@ public class ClientPacketListenerMixin {
     @Inject(method = "handleTakeItemEntity", at = @At("HEAD"))
     private void onTakeItemEntity(ClientboundTakeItemEntityPacket packet, CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();
+        if (!mc.isSameThread()) {
+            return;
+        }
+
         if (mc.level == null || mc.player == null) {
             return;
         }
