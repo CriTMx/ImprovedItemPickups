@@ -27,7 +27,9 @@ public class ClientEventsHandler {
 
     @SubscribeEvent
     public static void onClientJoin(ClientPlayerNetworkEvent.LoggingIn event) {
-        clientSession = new ClientSession(event.getPlayer());
+        if (clientSession == null) {
+            clientSession = new ClientSession(event.getPlayer());
+        }
     }
 
     @SubscribeEvent

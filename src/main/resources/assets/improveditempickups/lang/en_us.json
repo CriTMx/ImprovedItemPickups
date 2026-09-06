@@ -2,6 +2,7 @@
   "improveditempickups.configuration.notifications": "Notifications Settings",
   "improveditempickups.config.notifications.notification_lifetime_ticks": "Notification lifetime (ticks)",
   "improveditempickups.config.notifications.max_active_notifications": "Maximum active notifications",
+  "improveditempickups.config.notifications.global_scale_factor": "Global scale factor",
   "improveditempickups.config.notifications.repeated_pickup_policy": "On repeated items picked up",
 
   "improveditempickups.configuration.components": "Notification Component Settings",
