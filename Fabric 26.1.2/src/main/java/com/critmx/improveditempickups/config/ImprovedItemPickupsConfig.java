@@ -31,6 +31,9 @@ public final class ImprovedItemPickupsConfig {
     @SerialEntry(value = "max_active_notifications", comment = "Maximum number of pickup notifications shown at once.")
     public int maxActiveNotifications = 5;
 
+    @SerialEntry(value = "global_scale", comment = "Size of pickup notifications. (Applies on top of GUI scale)")
+    public float globalScale = 1.0f;
+
     @SerialEntry(value = "repeated_pickup_policy", comment = "How repeated pickups of the same item are presented.")
     public RepeatedPickupPolicy repeatedPickupPolicy = RepeatedPickupPolicy.MERGE;
 

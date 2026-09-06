@@ -46,6 +46,17 @@ public class ModConfigMenu implements ModMenuApi {
                                                 .range(1, 100)
                                                 .step(1))
                                         .build())
+                                .option(Option.<Float>createBuilder()
+                                        .name(Component.translatable("improveditempickups.config.notifications.global_scale_factor"))
+                                        .binding(
+                                                defaults.globalScale,
+                                                () -> config.globalScale,
+                                                value -> config.globalScale = value
+                                        )
+                                        .controller(option -> FloatSliderControllerBuilder.create(option)
+                                                .range(0.2f, 5.0f)
+                                                .step(0.01f))
+                                        .build())
                                 .option(Option.<RepeatedPickupPolicy>createBuilder()
                                         .name(Component.translatable("improveditempickups.config.notifications.repeated_pickup_policy"))
                                         .binding(

@@ -22,14 +22,14 @@ public class SimpleNotificationDisplayComposition implements IPickupNotification
 
     @Override
     public void render(IPickupNotification notification, GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker, Vec2 position, float rotation, Vec2 scale, int color) {
+        var config = ImprovedItemPickupsConfig.CLIENT_CONFIG;
         var pose = guiGraphics.pose();
         pose.pushMatrix();
         pose.translate(position.x, position.y);
         pose.rotate(rotation);
-        pose.scale(scale.x, scale.y);
+        pose.scale(scale.x * config.globalScale, scale.y * config.globalScale);
         pose.translate(-position.x, -position.y);
         try {
-        var config = ImprovedItemPickupsConfig.CLIENT_CONFIG;
 
         int x = (int)position.x;
         int y = (int)position.y;
