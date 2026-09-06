@@ -15,6 +15,7 @@ public final class ImprovedItemPickupsConfig {
 
     public final ModConfigSpec.IntValue notificationLifetimeTicks;
     public final ModConfigSpec.IntValue maxActiveNotifications;
+    public final ModConfigSpec.DoubleValue globalScaleFactor;
     public final ModConfigSpec.EnumValue<RepeatedPickupPolicy> repeatedPickupPolicy;
     public final ModConfigSpec.EnumValue<PositionPreset> positionPreset;
     public final ModConfigSpec.IntValue positionOffsetX;
@@ -79,6 +80,16 @@ public final class ImprovedItemPickupsConfig {
                         5,
                         1,
                         100
+                );
+
+        globalScaleFactor = builder
+                .comment("Global size of the notification (applies on top of GUI scale setting)")
+                .translation("improveditempickups.config.notifications.global_scale_factor")
+                .defineInRange(
+                        "global_scale_factor",
+                        1.0,
+                        0.2,
+                        5.0
                 );
 
         repeatedPickupPolicy = builder
