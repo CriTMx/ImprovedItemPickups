@@ -21,9 +21,13 @@
 		"client": [
 			"com.critmx.improveditempickups.client.ImprovedItemPickupsClient"
 		],
-        "modmenu": [
-            "com.critmx.improveditempickups.client.ModConfigMenu"
-        ]
+      "modmenu": [
+          {
+            "value": "com.critmx.improveditempickups.client.ModConfigMenu",
+            "environment": "client",
+            "optional": true
+          }
+      ]
 	},
 	"mixins": [
 		"improveditempickups.mixins.json",
