@@ -149,8 +149,8 @@ public final class ImprovedItemPickupsConfig {
     }
 
     public static final class AnimationSettings {
-        public final int inDurationTicks = 4;
-        public final int outDurationTicks = 4;
+        public int inDurationTicks = 4;
+        public int outDurationTicks = 4;
         public PhaseSettings in = new PhaseSettings(
                 true,
                 50.0f,
