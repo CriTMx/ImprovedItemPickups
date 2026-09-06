@@ -1,0 +1,48 @@
+{
+	"schemaVersion": 1,
+	"id": "improveditempickups",
+	"version": "${version}",
+	"name": "Improved Item Pickups",
+	"description": "Improved, customizable information when picking up items!",
+	"authors": [
+		"CriTMx"
+	],
+	"contact": {
+		"homepage": "https://github.com/CriTMx/ImprovedItemPickups",
+		"sources": "https://github.com/CriTMx/ImprovedItemPickups"
+	},
+	"license": "MIT License",
+	"icon": "assets/improveditempickups/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.critmx.improveditempickups.ImprovedItemPickups"
+		],
+		"client": [
+			"com.critmx.improveditempickups.client.ImprovedItemPickupsClient"
+		],
+      "modmenu": [
+          {
+            "value": "com.critmx.improveditempickups.client.ModConfigMenu",
+            "environment": "client",
+            "optional": true
+          }
+      ]
+	},
+	"mixins": [
+		"improveditempickups.mixins.json",
+		{
+			"config": "improveditempickups.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+    "suggests": {
+      "modmenu": "*"
+    }
+}
